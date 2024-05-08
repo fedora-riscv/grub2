@@ -358,3 +358,11 @@ Patch0357: 0357-fs-ntfs-Fix-an-OOB-read-when-parsing-bitmaps-for-ind.patch
 Patch0358: 0358-fs-ntfs-Fix-an-OOB-read-when-parsing-a-volume-label.patch
 Patch0359: 0359-fs-ntfs-Make-code-more-readable.patch
 Patch0360: 0360-fs-xfs-Handle-non-continuous-data-blocks-in-director.patch
+Patch0361: 0361-RISC-V-Handle-R_RISCV_CALL_PLT-reloc.patch
+Patch0362: 0362-loader-Drop-argv-argument-in-grub_initrd_load.patch
+Patch0363: 0363-efi-Move-MS-DOS-stub-out-of-generic-PE-header-defini.patch
+Patch0364: 0364-Implement-LoadFile2-initrd-loading-protocol-for-Linu.patch
+Patch0365: 0365-RISC-V-Update-image-header.patch
+Patch0366: 0366-Add-riscv64-support.patch
+Patch0367: 0367-fix-riscv64.patch
+Patch0368: 0368-Add-R_RISCV_ALIGN-case.patch

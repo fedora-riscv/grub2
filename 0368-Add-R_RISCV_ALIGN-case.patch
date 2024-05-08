@@ -1,0 +1,45 @@
+From 077462300cb41f3a4edec98df840817be99ffade Mon Sep 17 00:00:00 2001
+From: Fedora Ninjas <grub2-owner@fedoraproject.org>
+Date: Wed, 8 May 2024 20:03:09 +0800
+Subject: [PATCH] Add R_RISCV_ALIGN case
+
+---
+ grub-core/kern/riscv/dl.c | 1 +
+ util/grub-mkimagexx.c     | 2 ++
+ 2 files changed, 3 insertions(+)
+
+diff --git a/grub-core/kern/riscv/dl.c b/grub-core/kern/riscv/dl.c
+index 1fa085b..416fbff 100644
+--- a/grub-core/kern/riscv/dl.c
++++ b/grub-core/kern/riscv/dl.c
+@@ -328,6 +328,7 @@ grub_arch_dl_relocate_symbols (grub_dl_t mod, void *ehdr,
+ 	  }
+ 	  break;
+ 
++	case R_RISCV_ALIGN:
+ 	case R_RISCV_RELAX:
+ 	  break;
+ 	default:
+diff --git a/util/grub-mkimagexx.c b/util/grub-mkimagexx.c
+index 5bbab1b..3e8f01d 100644
+--- a/util/grub-mkimagexx.c
++++ b/util/grub-mkimagexx.c
+@@ -1445,6 +1445,7 @@ SUFFIX (relocate_addrs) (Elf_Ehdr *e, struct section_metadata *smd,
+ 		       *t32 = grub_host_to_target32 ((grub_target_to_host32 (*t32) & 0x1fff07f) | imm11_5 | imm4_0);
+ 		     }
+ 		     break;
++		   case R_RISCV_ALIGN:
+ 		   case R_RISCV_RELAX:
+ 		     break;
+ 		   default:
+@@ -1800,6 +1801,7 @@ translate_relocation_pe (struct translate_context *ctx,
+ 				 image_target);
+ 	  }
+ 	  break;
++	case R_RISCV_ALIGN:
+ 	case R_RISCV_RELAX:
+ 	  break;
+ 	default:
+-- 
+2.44.0
+

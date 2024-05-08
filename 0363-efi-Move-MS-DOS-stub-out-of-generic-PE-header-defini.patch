@@ -1,0 +1,75 @@
+From 45972ce35b7cca205d0651b2f84eb6da44db9e64 Mon Sep 17 00:00:00 2001
+From: Fedora Ninjas <grub2-owner@fedoraproject.org>
+Date: Tue, 5 Dec 2023 09:41:47 +0800
+Subject: [PATCH 349/352] efi: Move MS-DOS stub out of generic PE header
+ definition
+
+---
+ grub-core/kern/efi/efi.c |  8 ++++++--
+ include/grub/efi/pe32.h  | 16 ++++++++++++----
+ 2 files changed, 18 insertions(+), 6 deletions(-)
+
+diff --git a/grub-core/kern/efi/efi.c b/grub-core/kern/efi/efi.c
+index 4ac2b27..8d96c7b 100644
+--- a/grub-core/kern/efi/efi.c
++++ b/grub-core/kern/efi/efi.c
+@@ -315,7 +315,8 @@ grub_addr_t
+ grub_efi_section_addr (const char *section_name)
+ {
+   grub_efi_loaded_image_t *image;
+-  struct grub_pe32_header *header;
++  struct grub_msdos_image_header *header;
++  struct grub_pe_image_header *pe_image_header;
+   struct grub_pe32_coff_header *coff_header;
+   struct grub_pe32_section_table *sections;
+   struct grub_pe32_section_table *section;
+@@ -327,7 +328,10 @@ grub_efi_section_addr (const char *section_name)
+     return 0;
+ 
+   header = image->image_base;
+-  coff_header = &(header->coff_header);
++  pe_image_header
++    = (struct grub_pe_image_header *) ((char *) header
++                                       + header->pe_image_header_offset);
++  coff_header = &(pe_image_header->coff_header);
+   sections
+     = (struct grub_pe32_section_table *) ((char *) coff_header
+ 					  + sizeof (*coff_header)
+diff --git a/include/grub/efi/pe32.h b/include/grub/efi/pe32.h
+index a5e623e..e395ba1 100644
+--- a/include/grub/efi/pe32.h
++++ b/include/grub/efi/pe32.h
+@@ -71,6 +71,17 @@ struct grub_dos_header
+   grub_uint32_t lfanew;
+ };
+ 
++struct grub_msdos_image_header
++{
++  /* This is always 'MZ'. (GRUB_PE32_MAGIC)  */
++  grub_uint16_t msdos_magic;
++
++  grub_uint16_t reserved[29];
++
++  /* The file offset of the PE image header. */
++  grub_uint32_t pe_image_header_offset;
++};
++
+ /* According to the spec, the minimal alignment is 512 bytes...
+    But some examples (such as EFI drivers in the Intel
+    Sample Implementation) use 32 bytes (0x20) instead, and it seems
+@@ -308,11 +319,8 @@ struct grub_pe32_section_table
+ #define GRUB_PE32_SIGNATURE_SIZE		4
+ #define GRUB_PE32_SIGNATURE			"PE\0\0"
+ 
+-struct grub_pe32_header
++struct grub_pe_image_header
+ {
+-  /* This should be filled in with GRUB_PE32_MSDOS_STUB.  */
+-  grub_uint8_t msdos_stub[GRUB_PE32_MSDOS_STUB_SIZE];
+-
+   /* This is always PE\0\0.  */
+   char signature[GRUB_PE32_SIGNATURE_SIZE];
+ 
+-- 
+2.42.0
+

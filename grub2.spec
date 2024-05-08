@@ -17,7 +17,7 @@
 Name:		grub2
 Epoch:		1
 Version:	2.06
-Release:	121%{?dist}
+Release:	121.rv64%{?dist}
 Summary:	Bootloader with support for Linux, Multiboot and more
 License:	GPL-3.0-or-later
 URL:		http://www.gnu.org/software/grub/
@@ -287,9 +287,8 @@ ln -s ../grub2-systemd-integration.service \
 %global dip RPM_BUILD_ROOT=%{finddebugroot} %{__debug_install_post}
 %define __debug_install_post (						\
 	mkdir -p %{finddebugroot}/usr					\
-	mv %{buildroot}/usr/bin %{finddebugroot}/usr/bin		\
-	[ "%{_sbindir}" != "%{_bindir}" ] &&				\\\
-		mv %{buildroot}/usr/sbin %{finddebugroot}/usr/sbin	\
+	mv ${RPM_BUILD_ROOT}/usr/bin %{finddebugroot}/usr/bin		\
+	mv ${RPM_BUILD_ROOT}/usr/sbin %{finddebugroot}/usr/sbin		\
 	%{dip}								\
 	install -m 0755 -d %{buildroot}/usr/lib/ %{buildroot}/usr/src/	\
 	cp -al %{finddebugroot}/usr/lib/debug/				\\\
@@ -297,8 +296,7 @@ ln -s ../grub2-systemd-integration.service \
 	cp -al %{finddebugroot}/usr/src/debug/				\\\
 		%{buildroot}/usr/src/debug/ )				\
 	mv %{finddebugroot}/usr/bin %{buildroot}/usr/bin		\
-	[ "%{_sbindir}" != "%{_bindir}" ] &&				\\\
-		mv %{finddebugroot}/usr/sbin %{buildroot}/usr/sbin	\
+	mv %{finddebugroot}/usr/sbin %{buildroot}/usr/sbin		\
 	%{nil}
 
 %undefine buildsubdir
@@ -484,6 +482,7 @@ mv ${EFI_HOME}/grub.cfg.stb ${EFI_HOME}/grub.cfg
 %exclude %{_datadir}/man/man1/grub2-render-label*
 
 %if %{with_legacy_arch}
+%{_sbindir}/grub2-install
 %ifarch x86_64
 %{_sbindir}/grub2-bios-setup
 %else
@@ -555,6 +554,9 @@ mv ${EFI_HOME}/grub.cfg.stb ${EFI_HOME}/grub.cfg
 %endif
 
 %changelog
+* Wed May 08 2024 Songsong Zhang <U2FsdGVkX1@gmail.com> - 2.06-121.rv64
+- Add riscv64 support
+
 * Fri Apr 12 2024 Nicolas Frayer <nfrayer@redhat.com> - 2.06-121
 - fs/xfs: Handle non-continuous data blocks in directory extents
 - Related: #2254370
